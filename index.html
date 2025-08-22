@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLC Statistics Final Escape Room</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #e8e8e8;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section {
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid #4a5568;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #48bb78;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            color: #68d391;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #48bb78;
+            padding-bottom: 10px;
+        }
+
+        .classroom-bg {
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+            padding: 40px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #4a5568;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+            background: linear-gradient(135deg, #38a169, #2f855a);
+        }
+
+        .choice-btn:disabled {
+            background: #718096;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        input[type="text"], input[type="number"] {
+            background: rgba(45, 55, 72, 0.8);
+            border: 2px solid #4a5568;
+            color: #e8e8e8;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1.1em;
+            width: 100%;
+            max-width: 300px;
+            margin: 10px 0;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #48bb78;
+            box-shadow: 0 0 10px rgba(72, 187, 120, 0.3);
+        }
+
+        .poster {
+            background: #f7fafc;
+            color: #2d3748;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 3px solid #4a5568;
+        }
+
+        .poster img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .computer-screen {
+            background: #000;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            border: 3px solid #333;
+        }
+
+        .sticky-note {
+            background: linear-gradient(135deg, #fed7d7, #feb2b2);
+            color: #742a2a;
+            padding: 20px;
+            transform: rotate(-2deg);
+            margin: 20px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            font-handwriting: cursive;
+        }
+
+        .success {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            color: #22543d;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #38a169;
+        }
+
+        .error {
+            background: linear-gradient(135deg, #fed7d7, #feb2b2);
+            color: #742a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 5px solid #e53e3e;
+        }
+
+        .cryptex {
+            background: linear-gradient(135deg, #8b7355, #a0855b);
+            border-radius: 50px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 400px;
+            text-align: center;
+            color: #2d3748;
+            border: 5px solid #744210;
+        }
+
+        .progress-bar {
+            background: #4a5568;
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .flc-branding {
+            text-align: center;
+            color: #48bb78;
+            font-style: italic;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            h1 { font-size: 2em; }
+            .choice-btn { display: block; width: 100%; margin: 5px 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Section 1: Introduction -->
+        <div class="section active" id="intro">
+            <h1>🏔️ YOUR FINAL TEST... ESCAPE 🏔️</h1>
+            <div class="flc-branding">Fort Lewis College - MATH 132 Final Exam Study</div>
+            
+            <div class="classroom-bg">
+                <p style="font-size: 1.2em; line-height: 1.6;">You start to stir awake... your brain still foggy with half sleep.</p>
+                
+                <p><strong>Where am I?</strong></p>
+                
+                <p>You think back to the last thing you remember. It is finals week. You were studying with some friends in the library. You went home. You got up and were on your way to your last final. Stats (obviously your favorite because Professor Kurzweil is the absolute best). You notice that you're in the stats classroom. You... fell asleep during the Stats final?!?!</p>
+                
+                <p>You rub the sleep out of your eyes. Almost all the lights are off. The projector whirs overhead, jerking your attention to the screen and all you see is a simple message, "YOUR FINAL TEST...ESCAPE"</p>
+                
+                <p>You rush to open the doors but they are barred with a chain and padlock. It needs a key. You swear you hear Professor Kurzweil's maniacal laughter, but aren't sure if it's just in your head.</p>
+                
+                <p>You are locked in. You reach for your phone. The service has been blocked. You can't call for help.</p>
+                
+                <p><strong>You are trapped in Stats. It's going to take everything you know to get out.</strong></p>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <h2>🎒 You look around the room</h2>
+                <p>It's your stats classroom. There is a computer and a desk at the front of the room. There are 4 posters hung up, 2 on either side of the room. There are long desks and chairs throughout the room. What would you like to do?</p>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="choice-btn" onclick="showSection('posters')">🖼️ Examine the posters</button>
+                    <button class="choice-btn" onclick="showSection('computer')">💻 Examine the computer</button>
+                    <button class="choice-btn" onclick="showSection('desk')">🗃️ Examine the desk</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Posters -->
+        <div class="section" id="posters">
+            <h2>🖼️ The Posters</h2>
+            <p>There are 4 posters on the wall of the classroom. One appears to be a motivational stats poster featuring a hand flipping a coin. One is an old class project from Fall 2022. One is a classic nonsense academic poster with a generic stock woman thinking about dice. The last one is an advertisement for Fort Lewis College Mountain Biking Team.</p>
+
+            <h3>Which Poster Would You Like to Examine?</h3>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="choice-btn" onclick="showSection('coin-poster')">🪙 Coin Poster</button>
+                <button class="choice-btn" onclick="showSection('project-poster')">📊 Project Poster</button>
+                <button class="choice-btn" onclick="showSection('thinking-poster')">🤔 Thinking Poster</button>
+                <button class="choice-btn" onclick="showSection('mtb-poster')">🚵 Mountain Biking Poster</button>
+                <button class="choice-btn" onclick="showSection('intro')" style="background: #718096;">🔙 Back to room</button>
+            </div>
+        </div>
+
+        <!-- Section 3: Computer -->
+        <div class="section" id="computer">
+            <h2>💻 The Computer</h2>
+            <p>The computer is on but the main screen is a lock screen asking for a password to unlock. On the computer is a sticky note that says:</p>
+            
+            <div class="sticky-note">
+                <strong>User1</strong><br>
+                PW: 1-1/k²<br>
+                <em>It appears the password is 9 characters long.</em>
+            </div>
+
+            <div class="computer-screen">
+                <p>FORT LEWIS COLLEGE - SECURE LOGIN</p>
+                <p>Username: User1</p>
+                <p>Password: [_________]</p>
+                <p style="color: #ffff00;">Hint: Normal distribution with μ=65, σ=8. What z-score has 84% of data below it? Enter as "z" + the value (e.g., z175)</p>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <label for="password">Please enter the password:</label><br>
+                <input type="text" id="password" placeholder="9 characters exactly">
+                <button class="choice-btn" onclick="checkPassword()" style="margin-left: 10px;">🔓 Enter</button>
+            </div>
+
+            <div id="password-feedback"></div>
+
+            <button class="choice-btn" onclick="showSection('intro')" style="background: #718096;">🔙 Back to room</button>
+        </div>
+
+        <!-- Section 4: Desktop -->
+        <div class="section" id="desktop">
+            <h2>🖥️ Desktop</h2>
+            <div class="success">
+                <p><strong>Success! You're in!</strong> The computer is now accessible to you! BUT THE INTERNET IS OUT. Whether this was part of the evil plan or just a fluke of FLC's networking you aren't calling for help this way either.</p>
+                
+                <p>The desktop wallpaper appears to be a statistics diagram with a shaded area. On the desktop are 3 files. One says "EvilPlan" another says "StatsExamples" and the third says "SkyhawkStudents"</p>
+                
+                <p><em>(From this point on you can use Excel.)</em></p>
+            </div>
+
+            <div class="poster">
+                <h3>📈 Desktop Wallpaper</h3>
+                <div style="text-align: center;">
+                    <svg width="400" height="200" viewBox="0 0 400 200">
+                        <!-- Normal curve -->
+                        <path d="M 50 150 Q 100 80 150 50 Q 200 20 250 50 Q 300 80 350 150" stroke="#2d3748" stroke-width="3" fill="none"/>
+                        <!-- Vertical lines -->
+                        <line x1="150" y1="50" x2="150" y2="150" stroke="#2d3748" stroke-width="2" stroke-dasharray="5,5"/>
+                        <line x1="200" y1="20" x2="200" y2="150" stroke="#2d3748" stroke-width="2" stroke-dasharray="5,5"/>
+                        <line x1="250" y1="50" x2="250" y2="150" stroke="#2d3748" stroke-width="2" stroke-dasharray="5,5"/>
+                        <!-- Shaded area -->
+                        <path d="M 250 50 Q 300 80 350 150 L 350 150 L 250 150 Z" fill="rgba(72, 187, 120, 0.3)"/>
+                        <!-- Labels -->
+                        <text x="200" y="170" text-anchor="middle" fill="#2d3748" font-size="14">μ = 55</text>
+                        <text x="150" y="170" text-anchor="middle" fill="#2d3748" font-size="12">45</text>
+                        <text x="250" y="170" text-anchor="middle" fill="#2d3748" font-size="12">65</text>
+                        <text x="100" y="40" fill="#2d3748" font-size="12">σ = 5</text>
+                        <text x="300" y="100" fill="#2d3748" font-size="12">xxxx</text>
+                    </svg>
+                </div>
+            </div>
+
+            <h3>What would you like to do?</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="choice-btn" onclick="showSection('evil-plan')">📄 Click EvilPlan.docx</button>
+                <button class="choice-btn" onclick="showSection('stats-examples')">📊 Click StatsExamples.xlsx</button>
+                <button class="choice-btn" onclick="showSection('skyhawk-students')">🦅 Click SkyhawkStudents.txt</button>
+                <button class="choice-btn" onclick="showSection('intro')" style="background: #718096;">🔙 Back to room</button>
+            </div>
+        </div>
+
+        <!-- Section 5: Evil Plan PIN -->
+        <div class="section" id="evil-plan">
+            <h2>📄 EvilPlan.docx PIN</h2>
+            <p>You are prompted to enter a 4 digit pin. Of course you are! Who would just have a file named 'EvilPlan' and not put a PIN on it.</p>
+
+            <div class="computer-screen">
+                <p>🔒 DOCUMENT PROTECTED</p>
+                <p>Enter 4-digit PIN to access EvilPlan.docx</p>
+                <p style="color: #ffff00;">Hint: In a correlation matrix, r = 0.333 with n = 45. Is this significant at α = 0.05? Critical value is 0.294. Enter 0001 for YES, 0000 for NO.</p>
+            </div>
+
+            <div style="margin: 20px 0;">
+                <label for="pin">Please enter the 4 digit pin:</label><br>
+                <input type="number" id="pin" placeholder="4 digits" min="1000" max="9999">
+                <button class="choice-btn" onclick="checkPin()" style="margin-left: 10px;">🔓 Enter PIN</button>
+            </div>
+
+            <div id="pin-feedback"></div>
+
+            <button class="choice-btn" onclick="showSection('desktop')" style="background: #718096;">🔙 Back to desktop</button>
+        </div>
+
+        <!-- Section 6: Evil Plan Document -->
+        <div class="section" id="evil-plan-doc">
+            <h2>📄 EvilPlan.docx</h2>
+            <div class="success">
+                <p><strong>Success.</strong> You can see the evil plan. It has 4 points and then a sentence in all caps.</p>
+            </div>
+
+            <div class="poster">
+                <h3>🦹‍♀️ Professor Kurzweil's Evil Plan</h3>
+                <ol style="line-height: 1.8;">
+                    <li>Put sleeping powder into the vents (BE SURE TO TAKE SLEEPING POWDER ANTIDOTE BEFORE CLASS)</li>
+                    <li>Lock doors, leave when locking the last door.</li>
+                    <li>Just in case put statistics puzzle only solvable by you in the room so you can get out.</li>
+                    <li>Escape without ever having to grade a single final exam.</li>
+                </ol>
+                
+                <p style="margin-top: 20px; font-weight: bold; text-align: center;">
+                    ANOVA IS HIDING SOMETHING
+                </p>
+            </div>
+
+            <h3>ANOVA is hiding something. What could that mean?</h3>
+            <p>It must be something in the room. What could ANOVA be dealing with?</p>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="choice-btn" onclick="showSection('thinking-poster')">🤔 The thinking poster</button>
+                <button class="choice-btn" onclick="showSection('project-poster')">📊 The project poster</button>
+                <button class="choice-btn" onclick="showSection('mtb-poster')">🚵 The mountain biking poster</button>
+                <button class="choice-btn" onclick="showSection('desktop')">💻 The other files on the computer</button>
+                <button class="choice-btn" onclick="showSection('intro')" style="background: #718096;">🔙 Explore the room more</button>
+            </div>
+        </div>
+
+        <!-- Section 7: Project Poster Rip -->
+        <div class="section" id="project-rip">
+            <h2>📊 Rip it!</h2>
+            <p>You remember something like being struck by lightning. ANOVA analyzes variation between groups! You rush over to the project poster with the group data and rip it off the wall. Taped to the back of the poster is a small key. This must fit the cabinet on the desk! You rush to unlock it.</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <button class="choice-btn" onclick="showSection('cabinet')" style="font-size: 1.3em;">🔑 Open the Cabinet!</button>
+            </div>
+        </div>
+
+        <!-- Section 8: Cabinet -->
+        <div class="section" id="cabinet">
+            <h2>🗃️ The Cabinet</h2>
+            <p>You unlock the cabinet and inside there is a Cryptex. One of those cylinder puzzle items that require a code. How the heck do you know what a cryptex is? Must have seen it on TikTok. This one has all numbers on it and requires a 6 digit code to open. It is sitting on a piece of paper. The paper appears to have a table with 2 columns on it.</p>
+
+            <div class="poster">
+                <h3>📋 The Paper</h3>
+                <p><strong>Frequency Distribution Problem (TV Show Lengths in Minutes)</strong></p>
+                <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                    <tr>
+                        <th style="border: 2px solid #4a5568; padding: 10px; background: #e2e8f0;">Interval</th>
+                        <th style="border: 2px solid #4a5568; padding: 10px; background: #e2e8f0;">Frequency</th>
+                        <th style="border: 2px solid #4a5568; padding: 10px; background: #e2e8f0;">Rel. Freq (%)</th>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #4a5568; padding: 8px;">25.00-29.99</td>
+                        <td style="border: 1px solid #4a5568; padding: 8px;">27</td>
+                        <td style="border: 1px solid #4a5568; padding: 8px;">? (A)</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #4a5568; padding: 8px;">35.00-39.99</td>
+                        <td style="border: 1px solid #4a5568; padding: 8px;">? (B)</td>
+                        <td style="border: 1px solid #4a5568; padding: 8px;">11.76</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #4a5568; padding: 8px;">40.00-44.99</td>
+                        <td style="border: 1px solid #4a5568; padding: 8px;">9</td>
+                        <td style="border: 1px solid #4a5568; padding: 8px;">? (C)</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #4a5568; padding: 8px; font-weight: bold;">Total</td>
+                        <td style="border: 1px solid #4a5568; padding: 8px; font-weight: bold;">85</td>
+                        <td style="border: 1px solid #4a5568; padding: 8px; font-weight: bold;">100%</td>
+                    </tr>
+                </table>
+                <p><em>Calculate A, B, C and use the first digit of each for the 6-digit code: AABBCC</em></p>
+                <p><em>A = Relative frequency %, B = Frequency count, C = Relative frequency %</em></p>
+            </div>
+
+            <div class="cryptex">
+                <h3>🔐 Cryptex</h3>
+                <p>Enter the 6-digit code:</p>
+                <div style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+                    <input type="number" id="cryptex1" min="0" max="9" style="width: 50px; text-align: center;">
+                    <input type="number" id="cryptex2" min="0" max="9" style="width: 50px; text-align: center;">
+                    <input type="number" id="cryptex3" min="0" max="9" style="width: 50px; text-align: center;">
+                    <input type="number" id="cryptex4" min="0" max="9" style="width: 50px; text-align: center;">
+                    <input type="number" id="cryptex5" min="0" max="9" style="width: 50px; text-align: center;">
+                    <input type="number" id="cryptex6" min="0" max="9" style="width: 50px; text-align: center;">
+                </div>
+                <button class="choice-btn" onclick="checkCryptex()">🔓 Open Cryptex</button>
+            </div>
+
+            <div id="cryptex-feedback"></div>
+
+            <button class="choice-btn" onclick="showSection('desktop')" style="background: #718096;">🔙 Back to desktop</button>
+        </div>
+
+        <!-- Section 9: Cryptex Opens -->
+        <div class="section" id="cryptex-opens">
+            <h2>🎉 The Cryptex Opens!</h2>
+            <div class="success">
+                <p><strong>With a click the cryptex opens!</strong> Something heavy falls out. A key. A Beta shaped key. This must unlock the padlock. You rush over to the lock and chains. You insert the key and...</p>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="font-size: 6em; margin: 20px 0;">🗝️</div>
+                <p style="font-size: 1.2em; color: #48bb78;"><em>A Beta-shaped key - the key to freedom!</em></p>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <button class="choice-btn" onclick="showSection('escape')" style="font-size: 1.3em; background: linear-gradient(135deg, #d69e2e, #b7791f);">🏃‍♀️ ESCAPE!</button>
+            </div>
+        </div>
+
+        <!-- Section 10: You Made it Out -->
+        <div class="section" id="escape">
+            <h1>🎊 YOU MADE IT OUT! 🎊</h1>
+            <div class="success" style="text-align: center; padding: 40px;">
+                <p style="font-size: 1.3em; margin-bottom: 20px;">The padlock opens. The chains fall away. You get out of the classroom as fast as you can. You practically fly down the stairs and out the front door. From the front quad you look back on the FLC campus. It's beautiful with the La Plata Mountains in the background. But not so pretty you want to be stuck in there forever. You turn around and walk away.</p>
+                
+                <p style="font-size: 1.2em; margin: 20px 0; color: #48bb78;">You throw a fist in the air. "Don't You (Forget About Me)" by Simple Minds begins to play.</p>
+                
+                <p style="font-size: 1.4em; font-weight: bold; color: #d69e2e;">🏔️ You passed the last test. Now you just have to pass the class. 🏔️</p>
+                
+                <div style="margin: 30px 0; padding: 20px; background: rgba(72, 187, 120, 0.2); border-radius: 10px;">
+                    <h3>🎓 Congratulations, Future Skyhawk!</h3>
+                    <p>You've demonstrated mastery of:</p>
+                    <ul style="text-align: left; margin: 20px auto; max-width: 400px;">
+                        <li>Chebyshev's Inequality</li>
+                        <li>Normal Distribution & Z-scores</li>
+                        <li>Bernoulli Distributions</li>
+                        <li>Descriptive Statistics</li>
+                        <li>Probability Concepts</li>
+                    </ul>
+                    <p><strong>You're ready for your MATH 132 final! 🚀</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Individual Poster Sections -->
+        <div class="section" id="coin-poster">
+            <h2>🪙 Coin Poster</h2>
+            <div class="poster">
+                <p>You take a closer look at the coin poster. It says, "One shot. Two outcomes. Infinite insight." Cheesy. But also it looks like someone put some hard work into it on Canva.</p>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="background: #2d3748; color: #ffd700; padding: 30px; border-radius: 10px; display: inline-block;">
+                        <h3 style="color: #ffd700;">One shot.<br>Two outcomes.<br>Infinite insight.</h3>
+                        <div style="font-size: 4em; margin: 20px 0;">🪙</div>
+                    </div>
+                </div>
+                
+                <p><em>There's something about this poster that seems important...</em></p>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="choice-btn" onclick="showSection('posters')">🔙 Back to posters</button>
+            </div>
+        </div>
+
+        <div class="section" id="project-poster">
+            <h2>📊 Project Poster</h2>
+            <div class="poster">
+                <p>You take a closer look at the project poster. It appears to be from Fall 2022 and is on the topic of Unions and Intersections. There is a joint probability table as well as a couple Venn Diagrams. Apparently the poster got a B.</p>
+                
+                <div style="text-align: center;">
+                    <h3>Unions and Intersections</h3>
+                    <p><strong>QM2241 Project - Fall 2022</strong></p>
+                    
+                    <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                        <div>
+                            <div style="color: #d69e2e; font-size: 2em;">⚪⚪</div>
+                            <p><strong>OR</strong></p>
+                        </div>
+                        <div>
+                            <div style="color: #48bb78; font-size: 2em;">⚪</div>
+                            <p><strong>AND</strong></p>
+                        </div>
+                    </div>
+                    
+                    <table style="margin: 20px auto; border-collapse: collapse;">
+                        <tr><th style="border: 1px solid #333; padding: 8px;"></th><th style="border: 1px solid #333; padding: 8px;">Blue</th><th style="border: 1px solid #333; padding: 8px;">Green</th><th style="border: 1px solid #333; padding: 8px;">Total</th></tr>
+                        <tr><th style="border: 1px solid #333; padding: 8px;">Group 1</th><td style="border: 1px solid #333; padding: 8px;">10</td><td style="border: 1px solid #333; padding: 8px;">20</td><td style="border: 1px solid #333; padding: 8px;">30</td></tr>
+                        <tr><th style="border: 1px solid #333; padding: 8px;">Group 2</th><td style="border: 1px solid #333; padding: 8px;">5</td><td style="border: 1px solid #333; padding: 8px;">15</td><td style="border: 1px solid #333; padding: 8px;">20</td></tr>
+                        <tr><th style="border: 1px solid #333; padding: 8px;">Total</th><td style="border: 1px solid #333; padding: 8px;">15</td><td style="border: 1px solid #333; padding: 8px;">35</td><td style="border: 1px solid #333; padding: 8px;">50</td></tr>
+                    </table>
+                    
+                    <p style="color: #e53e3e; font-size: 0.9em; margin-top: 20px;">Grade: B 📝</p>
+                </div>
+            </div>
+
+            <button class="choice-btn" onclick="showSection('posters')">🔙 Back to posters</button>
+        </div>
+
+        <div class="section" id="thinking-poster">
+            <h2>🤔 Thinking Poster</h2>
+            <div class="poster">
+                <p>You examine the poster of the woman thinking. It says, "Revise. Recalculate. Believe." and also "Beliefs, upgraded." There appears to be something scribbled on the bottom left hand corner.</p>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="background: #f7fafc; padding: 30px; border-radius: 10px; position: relative;">
+                        <h3 style="color: #2d3748;">Revise. Recalculate. Believe.</h3>
+                        <div style="font-size: 3em; margin: 20px 0;">🤔</div>
+                        <div style="display: flex; justify-content: space-around; flex-wrap: wrap; margin: 20px 0;">
+                            <span style="font-size: 2em;">🎲</span>
+                            <span style="font-size: 2em;">📊</span>
+                            <span style="font-size: 2em;">📈</span>
+                            <span style="font-size: 2em;">🧮</span>
+                        </div>
+                        <h4 style="color: #2d3748;">Beliefs, upgraded.</h4>
+                        
+                        <div style="position: absolute; bottom: 10px; left: 10px; color: #e53e3e; transform: rotate(-15deg); font-size: 0.8em;">
+                            <em>Something important? Hard to read...</em>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="choice-btn" onclick="showSection('posters')">🔙 Back to posters</button>
+        </div>
+
+        <div class="section" id="mtb-poster">
+            <h2>🚵 Mountain Biking Poster</h2>
+            <div class="poster">
+                <p>You look at the Mountain Biking Poster. It's pretty crudely done. There's even a typo where someone didn't hold shift for the "!" The mountain biking team needs a new graphic designer. Looks like their 1st race is October 24, '25. There's something odd about the date too.</p>
+                
+                <div style="text-align: center; background: #2f855a; color: white; padding: 30px; border-radius: 10px; margin: 20px 0;">
+                    <h2 style="color: white;">RACE! SET1 TRAIL!</h2>
+                    <div style="font-size: 4em; margin: 20px 0;">🚵‍♀️🏔️</div>
+                    <h3>Fort Lewis Skyhawks MTB</h3>
+                    <p>Come support your Skyhawks in their<br><strong>1st race @Trail Ridge on Oct. 24 '25</strong></p>
+                    <div style="margin-top: 20px;">
+                        <span style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px; margin: 0 5px;">🏁 ENDURANCE</span>
+                        <span style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px; margin: 0 5px;">⛰️ DOWNHILL</span>
+                        <span style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px; margin: 0 5px;">🚵 CROSS COUNTRY</span>
+                    </div>
+                </div>
+                
+                <p><em>Oct 24 '25... wait, isn't that in the past now? And what does "SET1" mean in this context?</em></p>
+            </div>
+
+            <button class="choice-btn" onclick="showSection('posters')">🔙 Back to posters</button>
+        </div>
+
+        <div class="section" id="desk">
+            <h2>🗃️ The Desk</h2>
+            <p>You look at the desk. There is a locked cabinet with a plexiglass window. In the window you can see a cylindrical object sitting on a piece of paper. You can't read what the paper says. You'll need a small key to unlock the cabinet.</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="background: rgba(74, 85, 104, 0.3); padding: 30px; border-radius: 10px; border: 3px solid #4a5568;">
+                    <h3>🔒 Locked Cabinet</h3>
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 20px; margin: 20px 0; border-radius: 5px;">
+                        <p style="color: #a0aec0;">Through the plexiglass you can see:</p>
+                        <div style="font-size: 3em; margin: 10px 0;">🔐</div>
+                        <p style="color: #a0aec0;"><em>A cylindrical puzzle device on some papers...</em></p>
+                    </div>
+                    <p style="color: #fed7d7;">🔑 Requires a small key to unlock</p>
+                </div>
+            </div>
+
+            <button class="choice-btn" onclick="showSection('intro')">🔙 Back to room</button>
+        </div>
+
+        <div class="section" id="stats-examples">
+            <h2>📊 StatsExamples.xlsx</h2>
+            <div class="success">
+                <p>You open an excel file. No password needed. There appear to just be some handy formulas for stats here. Must be a quick reference guide for the different types of formulas.</p>
+            </div>
+
+            <div class="poster">
+                <h3>📊 Statistics Formula Reference</h3>
+                <div style="background: #2d3748; color: #e8e8e8; padding: 20px; border-radius: 8px; font-family: monospace;">
+                    <p><strong>Confidence Intervals & Distributions:</strong></p>
+                    <p>• Confidence Interval for Population Mean, Standard Deviation Known: CONFIDENCE.NORM(alpha, standard_dev, size)</p>
+                    <p>• Confidence Interval for Population Mean, Standard Deviation Unknown: CONFIDENCE.T(alpha, standard_dev, size)</p>
+                    <p>• z-stat (1 tail): NORM.S.INV(alpha/2)</p>
+                    <p>• z-stat (2 tail): NORM.S.INV(1-alpha)</p>
+                    <p>• t-stat (2 tail) (+ and -): T.INV.2T(alpha, deg_freedom)</p>
+                    <p>• t-stat (1 tail): T.INV(1-alpha, deg_freedom)</p>
+                    <p>• normal probability: NORM.DIST(x, mean, standard_dev, TRUE)</p>
+                </div>
+            </div>
+
+            <button class="choice-btn" onclick="showSection('desktop')">🔙 Back to desktop</button>
+        </div>
+
+        <div class="section" id="skyhawk-students">
+            <h2>🦅 SkyhawkStudents.txt</h2>
+            <div class="success">
+                <p>Interesting. The "Skyhawk Students" document isn't just a .txt document. There is also a link hidden in the file.</p>
+                
+                <div style="margin: 20px 0; padding: 20px; background: #2d3748; border-radius: 8px;">
+                    <p style="color: #48bb78; text-decoration: underline; cursor: pointer;" onclick="showStudentData()">🔗 Link to Student Data</p>
+                </div>
+            </div>
+
+            <div id="student-data" style="display: none;">
+                <div class="poster">
+                    <h3>📊 Fort Lewis College MATH 132 Student Data</h3>
+                    <p><strong>TV Show Length Data for Frequency Distribution Practice</strong></p>
+                    
+                    <div style="background: #f7fafc; color: #2d3748; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <p><strong>Sample Size: n = 85 TV shows</strong></p>
+                        <p><strong>Frequency Distribution Calculations:</strong></p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>25.00-29.99 minutes: 27 shows → (27/85) × 100 = 31.76%</li>
+                            <li>35.00-39.99 minutes: ? shows → Given: 11.76% → 0.1176 × 85 = 10 shows</li>
+                            <li>40.00-44.99 minutes: 9 shows → (9/85) × 100 = 10.59%</li>
+                        </ul>
+                        <p><em>Remember: Use the first digit of each calculated value!</em></p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="choice-btn" onclick="showSection('desktop')">🔙 Back to desktop</button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress" style="width: 0%;"></div>
+        </div>
+        <div class="flc-branding">Fort Lewis College Mathematics Department</div>
+    </div>
+
+    <script>
+        let gameState = {
+            passwordSolved: false,
+            pinSolved: false,
+            coinRippable: false,
+            cryptexSolved: false,
+            progress: 0
+        };
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show the requested section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update progress
+            updateProgress();
+        }
+
+        function updateProgress() {
+            let progress = 0;
+            if (gameState.passwordSolved) progress += 20;
+            if (gameState.pinSolved) progress += 20;
+            if (gameState.coinRippable) progress += 20;
+            if (gameState.cryptexSolved) progress += 40;
+            
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        function checkPassword() {
+            const password = document.getElementById('password').value.toLowerCase();
+            const feedback = document.getElementById('password-feedback');
+            
+            // For normal distribution: 84th percentile is approximately z = 1.0
+            if (password === 'z1000' || password === 'z100' || password === 'z1') {
+                feedback.innerHTML = '<div class="success">🎉 Correct! Password accepted!</div>';
+                gameState.passwordSolved = true;
+                setTimeout(() => showSection('desktop'), 1500);
+            } else {
+                feedback.innerHTML = '<div class="error">❌ Incorrect password. Think about the 84th percentile z-score...</div>';
+            }
+            updateProgress();
+        }
+
+        function checkPin() {
+            const pin = document.getElementById('pin').value;
+            const feedback = document.getElementById('pin-feedback');
+            
+            // Correlation significance: r = 0.333, critical = 0.294, so it IS significant = 0001
+            if (pin === '0001') {
+                feedback.innerHTML = '<div class="success">🎉 Correct! Document unlocked!</div>';
+                gameState.pinSolved = true;
+                setTimeout(() => showSection('evil-plan-doc'), 1500);
+            } else {
+                feedback.innerHTML = '<div class="error">❌ Incorrect PIN. Is 0.333 > 0.294? Enter 0001 for YES, 0000 for NO.</div>';
+            }
+            updateProgress();
+        }
+
+        function checkCryptex() {
+            const c1 = document.getElementById('cryptex1').value;
+            const c2 = document.getElementById('cryptex2').value;
+            const c3 = document.getElementById('cryptex3').value;
+            const c4 = document.getElementById('cryptex4').value;
+            const c5 = document.getElementById('cryptex5').value;
+            const c6 = document.getElementById('cryptex6').value;
+            
+            const code = c1 + c2 + c3 + c4 + c5 + c6;
+            const feedback = document.getElementById('cryptex-feedback');
+            
+            // Based on frequency distribution calculations:
+            // A = 31.76% → first digit 3, B = 10 → first digit 1, C = 10.59% → first digit 1
+            // Code: 311100
+            if (code === '311100' || code === '331100') {
+                feedback.innerHTML = '<div class="success">🎉 The cryptex opens with a satisfying click!</div>';
+                gameState.cryptexSolved = true;
+                setTimeout(() => showSection('cryptex-opens'), 1500);
+            } else {
+                feedback.innerHTML = '<div class="error">❌ Wrong combination. Calculate the relative frequencies and use first digits...</div>';
+            }
+            updateProgress();
+        }
+
+        function showStudentData() {
+            document.getElementById('student-data').style.display = 'block';
+        }
+
+        // Make project poster rippable after seeing evil plan
+        function enableProjectRip() {
+            document.getElementById('rip-project-btn').style.display = 'inline-block';
+            gameState.coinRippable = true;
+            updateProgress();
+        }
+
+        // Check if evil plan has been viewed to enable project poster ripping
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const evilPlanDoc = document.getElementById('evil-plan-doc');
+                        if (evilPlanDoc && evilPlanDoc.classList.contains('active')) {
+                            enableProjectRip();
+                        }
+                    }
+                });
+            });
+            
+            const evilPlanDoc = document.getElementById('evil-plan-doc');
+            if (evilPlanDoc) {
+                observer.observe(evilPlanDoc, { attributes: true });
+            }
+        });
+
+        // Auto-focus on inputs and handle enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const activeSection = document.querySelector('.section.active');
+                if (activeSection.id === 'computer') {
+                    checkPassword();
+                } else if (activeSection.id === 'evil-plan') {
+                    checkPin();
+                } else if (activeSection.id === 'cabinet') {
+                    checkCryptex();
+                }
+            }
+        });
+
+        // Auto-advance cryptex inputs
+        document.querySelectorAll('[id^="cryptex"]').forEach((input, index) => {
+            input.addEventListener('input', function() {
+                if (this.value && index < 5) {
+                    document.getElementById('cryptex' + (index + 2)).focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
